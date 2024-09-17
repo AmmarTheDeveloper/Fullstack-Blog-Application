@@ -38,7 +38,7 @@ async function Login(request: NextRequest) {
           { status: 400 }
         );
       }
-      let { password, ...payload } = user._doc;
+      let { password, ...payload } = user.toObject();
       //holding the password in password variable and other things are stored in payload object
       let token = await generateToken(payload);
       const response = NextResponse.json(
