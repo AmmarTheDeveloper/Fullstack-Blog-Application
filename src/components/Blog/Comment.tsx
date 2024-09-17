@@ -185,8 +185,8 @@ const Comment = ({ comment }: CommentProps) => {
 
         {comment?.replies?.map((reply, index) => {
           return (
-            <div className="pl-[20px] my-2">
-              <Comment key={index} comment={reply as CommentType} />
+            <div key={index} className="pl-[20px] my-2">
+              <Comment comment={reply as CommentType} />
             </div>
           );
         })}
