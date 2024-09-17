@@ -1,5 +1,5 @@
+import { verifyToken } from "@/helper/token/token";
 import { NextRequest, NextResponse } from "next/server";
-import { isLoggedIn } from "./user/verifyUser/route";
 
 export function loginAndRegisterHandler(
   cb: (request: NextRequest, context: any) => Promise<NextResponse>
@@ -50,4 +50,27 @@ export function loggedInUserHandler(
       );
     }
   };
+}
+
+export async function verifyUser(request: NextRequest) {
+  let token = request.cookies.get("token")?.value;
+  if (!token) throw new Error("Token not found");
+  try {
+    let user = await verifyToken(token);
+    return user;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error.message || "Something went wrong.");
+  }
+}
+
+export async function isLoggedIn(request: NextRequest) {
+  let token = request.cookies.get("token")?.value;
+  if (!token) return null;
+  try {
+    const payload = await verifyToken(token);
+    return payload;
+  } catch (error) {
+    return null;
+  }
 }
