@@ -89,7 +89,7 @@ export default function Navbar() {
                             : "text-foreground/60"
                         )}
                       >
-                        Add BLog
+                        Add Blog
                       </Link>
                     </>
                   )
@@ -119,9 +119,7 @@ export default function Navbar() {
                 </div>
               ) : (
                 <div className="mx-2 mr-4">
-                  <Profile
-                    profileImage={"/profileImages/" + user.profileImage}
-                  />
+                  <Profile profileImage={user?.profileImage} />
                 </div>
               )
             ) : null}

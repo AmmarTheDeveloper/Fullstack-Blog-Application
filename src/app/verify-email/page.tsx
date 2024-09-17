@@ -52,13 +52,13 @@ export default function verifyEmail() {
           code: data.pin,
         }
       );
-      toast(response.data?.message || "Verified successfully");
+      toast.success(response.data?.message || "Verified successfully");
       setLoading(false);
-      router.push("/");
+      router.push("/login");
     } catch (error: any) {
       setLoading(false);
       console.log("Error occured while verifying email ", error);
-      toast(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   }
 

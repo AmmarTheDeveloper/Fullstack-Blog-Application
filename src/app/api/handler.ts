@@ -5,9 +5,10 @@ export function loginAndRegisterHandler(
   cb: (request: NextRequest, context: any) => Promise<NextResponse>
 ) {
   return async (request: NextRequest, context: any) => {
-    if (await isLoggedIn(request)) {
+    const user = await isLoggedIn(request);
+    if (user) {
       return NextResponse.json(
-        { success: false, message: "Already loggedin." },
+        { success: false, message: "Already logged in." },
         { status: 401 }
       );
     }
@@ -29,13 +30,14 @@ export function loggedInUserHandler(
   cb: (request: NextRequest, context: any) => Promise<NextResponse>
 ) {
   return async (request: NextRequest, context: any) => {
-    const loggedIn = await isLoggedIn(request);
-    if (!loggedIn) {
+    const user = await isLoggedIn(request);
+    if (!user) {
       return NextResponse.json(
         { success: false, message: "Unauthorized access." },
         { status: 401 }
       );
     }
+    context.user = user;
     try {
       return await cb(request, context);
     } catch (error: any) {

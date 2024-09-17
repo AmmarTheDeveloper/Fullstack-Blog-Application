@@ -30,7 +30,8 @@ import { Spinner } from "@/helper/loader/spinner";
 export default function Register() {
   const router = useRouter();
   const [isLoading, setLoading] = useState(false);
-  const [image, setImage] = useState(null);
+  const [isWebcam, setWebCam] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -40,6 +41,20 @@ export default function Register() {
   interface RegisterResponse {
     success: boolean;
     message?: string;
+  }
+
+  function handleImageChange(e: any) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+
+    reader.onload = () => {
+      const base64String = reader.result;
+      setImage(String(base64String));
+    };
   }
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -65,11 +80,9 @@ export default function Register() {
       // }, 1000);
     } catch (error: any) {
       setLoading(false);
-      if (error.response.data.message) {
-        // return toast.error("Email already exist");
-        return toast.error(error.response.data.message);
-      }
-      toast.error("Something went wrong.");
+      toast.error(
+        error.response.data.message || error.message || "Something went wrong"
+      );
     }
   }
 
@@ -157,7 +170,45 @@ export default function Register() {
                 <label className="text-sm mb-2 block font-medium">
                   Profile Image
                 </label>
-                <ProfileImageWebCam image={image} setImage={setImage} />
+                {isWebcam ? (
+                  <>
+                    <ProfileImageWebCam image={image} setImage={setImage} />
+                    <div className="text-center">
+                      <Button
+                        variant="outline"
+                        className="mt-2"
+                        type="button"
+                        onClick={() => {
+                          setWebCam(false);
+                          setImage(null);
+                        }}
+                      >
+                        Upload using file
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Input
+                      accept="image/*"
+                      type="file"
+                      className="my-2"
+                      onChange={handleImageChange}
+                    />
+                    <div className="text-center">
+                      <Button
+                        variant="outline"
+                        type="button"
+                        onClick={() => {
+                          setWebCam(true);
+                          setImage(null);
+                        }}
+                      >
+                        Upload using camera
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
 
               <p className="mt-2 text-[14px] dark:text-white text-[#282828]">

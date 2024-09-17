@@ -1,0 +1,49 @@
+.ql-editor {
+    min-height: 80px !important;
+}
+
+/* Dark Mode */
+.quill.dark-mode .ql-toolbar {
+    border: 1px solid hsl(217.2 32.6% 17.5%);
+    color: white;
+}
+
+.quill.dark-mode .ql-container {
+    border: 1px solid hsl(217.2 32.6% 17.5%);
+    color: white;
+}
+
+.quill.dark-mode .ql-toolbar .ql-formats .ql-header {
+    color: white;
+}
+
+/* This targets the icons (like B, I, U) and changes their color */
+.quill.dark-mode .ql-toolbar .ql-stroke {
+    stroke: white;
+    /* For SVG icons */
+}
+
+.quill.dark-mode .ql-toolbar .ql-fill {
+    fill: white;
+    /* For SVG fill */
+}
+
+/* This targets the selected options and dropdown arrows */
+.quill.dark-mode .ql-toolbar .ql-picker-label,
+.quill.dark-mode .ql-toolbar .ql-picker-item {
+    color: white;
+}
+
+.quill.dark-mode .ql-toolbar .ql-picker {
+    color: white;
+}
+
+.quill.dark-mode .ql-toolbar .ql-active {
+    color: white;
+}
+
+.quill.dark-mode .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
+    background: #020817;
+    border-color: transparent;
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+}

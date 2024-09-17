@@ -17,7 +17,6 @@ export async function fetchUser(dispatch: AppDispatch): Promise<void> {
 
     if (response.data.success) {
       dispatch(setUser(response.data.user));
-      console.log(response.data);
       return;
     }
     dispatch(clearUser());

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import axios, { AxiosResponse } from "axios";
-import { ApiResponse } from "@/helpers/types/types";
+import { ApiResponse } from "@/helper/types/types";
 import toast from "react-hot-toast";
 import {
   Select,
@@ -27,48 +27,74 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Editor from "@/components/Editor/Editor";
+import { useState } from "react";
+import { Spinner } from "@/helper/loader/spinner";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-  blogTitle: z.string().min(3, {
+  title: z.string().min(3, {
     message: "Enter Blog Title",
   }),
-  blogContent: z.string().min(3, {
+  description: z.string().min(3, {
+    message: "Enter Description",
+  }),
+  content: z.string().min(3, {
     message: "Enter Blog Content",
   }),
-  blogImage: z.string().min(3, {
-    message: "Enter Blog Image",
-  }),
-  blogCategory: z.string().min(3, {
+  thumbnail: z
+    .instanceof(File, {
+      message: "Upload blog thumbnail",
+    })
+    .refine((file) => file.type.startsWith("image/"), {
+      message: "The file must be an image",
+    }),
+  category: z.string().min(3, {
     message: "Enter Blog Category",
   }),
 });
 
 export default function AddBlog() {
+  const [isLoading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      blogTitle: "",
-      blogContent: "",
-      blogImage: "",
-      blogCategory: "",
+      title: "",
+      description: "",
+      category: "",
+      content: "",
+      thumbnail: undefined,
     },
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    let { blogTitle, blogContent, blogImage, blogCategory } = data;
+    setLoading(true);
+    let { title, description, category, thumbnail, content } = data;
+    const formData = new FormData();
+
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("category", category);
+    formData.append("content", content);
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail);
+    }
+
     try {
       let response: AxiosResponse<ApiResponse> = await axios.post(
-        `/api/admin/user/payment`,
+        `/api/user/blogs`,
+        formData,
         {
-          blogTitle,
-          blogContent,
-          blogImage,
-          blogCategory,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
-      toast.success("Payment added successfully.");
+      setLoading(false);
+      toast.success("Blog added successfully.");
       form.reset();
     } catch (error: any) {
+      setLoading(false);
       console.log(error);
       toast.error(error.response.data.message || "Internal server error.");
     }
@@ -76,14 +102,14 @@ export default function AddBlog() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="flex flex-col gap-[10px] max-w-[500px] mx-auto md:border md:p-4 md:rounded-md md:shadow  ">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mb-5">
+        <div className="p-[20px] flex flex-col gap-[10px] max-w-[500px] mx-auto md:border md:p-4 md:rounded-md md:shadow  ">
           <h1 className="text-center mb-4 md:text-3xl text-xl font-medium">
             Add Blog
           </h1>
           <FormField
             control={form.control}
-            name="blogTitle"
+            name="title"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Blog Title : </FormLabel>
@@ -97,25 +123,12 @@ export default function AddBlog() {
 
           <FormField
             control={form.control}
-            name="blogContent"
+            name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Blog Content : </FormLabel>
+                <FormLabel>Blog Description : </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter Blog Content" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="blogImage"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Blog Image : </FormLabel>
-                <FormControl>
-                  <Input type="file" accept="image/*" {...field} />
+                  <Textarea placeholder="Enter Description" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -124,15 +137,46 @@ export default function AddBlog() {
 
           <FormField
             control={form.control}
-            name="blogCategory"
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Blog Content : </FormLabel>
+                <FormControl>
+                  <Editor value={field.value} setValue={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="thumbnail"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Blog Thumbnail : </FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="category"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Blog Category : </FormLabel>
                 <FormControl>
                   <Select
+                    style={{ width: "100%" }}
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="w-full"
+                    value={field.value}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Category" />
@@ -141,9 +185,30 @@ export default function AddBlog() {
                       <SelectGroup>
                         <SelectLabel>Category</SelectLabel>
                         <SelectItem value="Technology">Technology</SelectItem>
+                        <SelectItem value="Lifestyle">Lifestyle</SelectItem>
                         <SelectItem value="Food">Food</SelectItem>
-                        <SelectItem value="Food And Fitness">
+                        <SelectItem value="Health And Fitness">
                           Health And Fitness
+                        </SelectItem>
+                        <SelectItem value="Education">Education</SelectItem>
+                        <SelectItem value="Business & Finance">
+                          Business & Finance
+                        </SelectItem>
+                        <SelectItem value="Entertainment">
+                          Entertainment
+                        </SelectItem>
+                        <SelectItem value="Sports">Sports</SelectItem>
+                        <SelectItem value="Science & Environment">
+                          Science & Environment
+                        </SelectItem>
+                        <SelectItem value="Politics & Current Affairs">
+                          Politics & Current Affairs
+                        </SelectItem>
+                        <SelectItem value="Art & Culture">
+                          Art & Culture
+                        </SelectItem>
+                        <SelectItem value="Personal Blogs">
+                          Personal Blogs
                         </SelectItem>
                       </SelectGroup>
                     </SelectContent>
@@ -154,9 +219,15 @@ export default function AddBlog() {
             )}
           />
 
-          <Button className="w-[fit-content] mt-[5px]" type="submit">
-            Submit
-          </Button>
+          {!isLoading ? (
+            <Button className="w-full mt-[5px]" type="submit">
+              Submit
+            </Button>
+          ) : (
+            <Button className="w-full mt-[5px]" type="button">
+              <Spinner />
+            </Button>
+          )}
         </div>
       </form>
     </Form>

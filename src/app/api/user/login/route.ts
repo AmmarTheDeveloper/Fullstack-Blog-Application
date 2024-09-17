@@ -38,7 +38,7 @@ async function Login(request: NextRequest) {
           { status: 400 }
         );
       }
-      let { password, ...payload } = user;
+      let { password, ...payload } = user._doc;
       //holding the password in password variable and other things are stored in payload object
       let token = await generateToken(payload);
       const response = NextResponse.json(
@@ -49,14 +49,13 @@ async function Login(request: NextRequest) {
             profileImage: user.profileImage,
           },
           success: true,
-
           message: "Logged in successfully",
         },
         { status: 200 }
       );
 
       response.cookies.set("token", token, {
-        secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+        secure: process.env.NODE_ENV === "production",
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 30,
       });

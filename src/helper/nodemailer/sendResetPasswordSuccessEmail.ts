@@ -11,10 +11,10 @@ export const sendResetPasswordSuccessEmail = async ({
 }: Props) => {
   try {
     await transporter.sendMail({
-      from: sender, // sender address
-      to: receiverEmail, // list of receivers
-      subject: "Password Reset Successful", // Subject line
-      html: resetPasswordSuccessEmailTemplate(fullname), // html body
+      from: sender,
+      to: receiverEmail,
+      subject: "Password Reset Successful",
+      html: resetPasswordSuccessEmailTemplate(fullname),
     });
   } catch (error: any) {
     console.log(

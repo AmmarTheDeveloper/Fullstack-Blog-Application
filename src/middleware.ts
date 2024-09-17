@@ -8,11 +8,17 @@ export async function middleware(request: NextRequest) {
     "/verify-email",
     "/forgot-password",
     "/reset-password",
-    "/blogs",
   ];
+
+  const duplex = ["/blogs", "/blogs/read"];
   const path = request.nextUrl.pathname;
   const token = request.cookies.get("token")?.value;
 
+  if (
+    duplex.some((dupPath) => path == dupPath || path.startsWith("/blogs/read/"))
+  ) {
+    return NextResponse.next();
+  }
   const isStaticPath = staticPaths.some((staticPath) =>
     path.startsWith(staticPath)
   );
@@ -55,7 +61,6 @@ export const config = {
     "/verify-email",
     "/forgot-password",
     "/reset-password/:path*",
-    "/blogs",
     "/blogs/:path*",
   ],
 };

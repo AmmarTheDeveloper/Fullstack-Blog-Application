@@ -13,13 +13,13 @@ export const sendResetPasswordEmail = async ({
 }: Props) => {
   try {
     await transporter.sendMail({
-      from: sender, // sender address
-      to: receiverEmail, // list of receivers
-      subject: "Reset Password", // Subject line
+      from: sender,
+      to: receiverEmail,
+      subject: "Reset Password",
       html: resetPasswordEmailTemplate(
         fullname,
         process.env.BASE_URL + "/reset-password/" + resetPasswordToken
-      ), // html body
+      ),
     });
   } catch (error: any) {
     console.log(

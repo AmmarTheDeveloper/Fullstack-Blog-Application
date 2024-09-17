@@ -80,7 +80,7 @@ const MobileNavbar = ({ user, loading }: UserProp) => {
                 Blogs
               </MobileLink>
 
-              {loading
+              {!loading
                 ? user != null && (
                     <>
                       <MobileLink href="/blogs/my" onOpenChange={setOpen}>
@@ -97,10 +97,10 @@ const MobileNavbar = ({ user, loading }: UserProp) => {
           </ScrollArea>
           {!loading ? (
             user === null ? (
-              <div className="mt-4">
+              <div className="mt-4 pr-[20px]">
                 <Link
                   className="text-[14px] font-medium text-[#666666]  dark:text-white block"
-                  href={"login"}
+                  href={"/login"}
                 >
                   {" "}
                   <Button className="mr-2 w-full">Login</Button>
@@ -108,7 +108,7 @@ const MobileNavbar = ({ user, loading }: UserProp) => {
                 <div className="text-center">OR</div>
                 <Link
                   className="text-[14px] font-medium text-[#666666]  dark:text-white block"
-                  href={"register"}
+                  href={"/register"}
                 >
                   <Button className="w-full">Register</Button>
                 </Link>

@@ -6,6 +6,7 @@ import { loginAndRegisterHandler } from "../../handler";
 import { writeFile } from "fs/promises";
 import { generateVerificationCode } from "@/utils/generateVerificationCode";
 import { sendVerificationToken } from "@/helper/nodemailer/sendVerificationToken";
+import { validatePassword } from "@/helper/authentication/validatePassword";
 
 async function Register(request: NextRequest) {
   await dbConnect();
@@ -22,10 +23,37 @@ async function Register(request: NextRequest) {
       );
     }
 
+    const mimeType = profileImage.split(";")[0].split(":")[1];
+    if (
+      ![
+        "image/jpg",
+        "image/jpeg",
+        "image/webp",
+        "image/png",
+        "image/gif",
+        "image/jfif",
+      ].includes(mimeType)
+    ) {
+      return NextResponse.json(
+        { success: false, message: "Only image files are allowed." },
+        { status: 400 }
+      );
+    }
+
     // Process profile image
     const base64 = profileImage.split(",")[1];
     const buffer = Buffer.from(base64, "base64");
     const fileName = `${Date.now()}.png`;
+
+    const imageSizeInBytes = buffer.byteLength;
+    const imageSizeInMB = imageSizeInBytes / (1024 * 1024);
+
+    if (imageSizeInMB > 1) {
+      return NextResponse.json(
+        { success: false, message: "Image size should be less than 1MB." },
+        { status: 400 }
+      );
+    }
 
     try {
       await writeFile(`./public/profileImages/${fileName}`, buffer);
@@ -47,18 +75,18 @@ async function Register(request: NextRequest) {
       );
     }
 
-    // Validate password
-    if (password.length < 8) {
+    const isValidPassword = validatePassword(password);
+
+    if (!isValidPassword.isValid) {
       return NextResponse.json(
         {
           success: false,
-          message: "Password length should be at least 8 characters.",
+          message: isValidPassword.message,
         },
         { status: 400 }
       );
     }
 
-    // Create and save new user
     const hashedPassword = await encrypt(password);
     const verificationToken = generateVerificationCode();
 
@@ -66,9 +94,9 @@ async function Register(request: NextRequest) {
       fullname,
       email,
       password: hashedPassword,
-      profileImage: fileName,
+      profileImage: "/profileImages/" + fileName,
       verificationToken,
-      verificationTokenExpiry: Date.now() + 300 * 60 * 1000, // 5 minutes
+      verificationTokenExpiry: Date.now() + 300 * 60 * 1000,
     });
 
     try {

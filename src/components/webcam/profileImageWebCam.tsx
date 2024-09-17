@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 interface WebcamProps {
   image: string | null;
-  setImage: React.Dispatch<React.SetStateAction<null>>;
+  setImage: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export const ProfileImageWebCam = ({ image, setImage }: WebcamProps) => {

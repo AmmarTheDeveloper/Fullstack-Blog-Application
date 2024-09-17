@@ -1,4 +1,5 @@
 import { loginAndRegisterHandler } from "@/app/api/handler";
+import { validatePassword } from "@/helper/authentication/validatePassword";
 import { encrypt } from "@/helper/encryptionDecription/encryptPassword";
 import { sendResetPasswordSuccessEmail } from "@/helper/nodemailer/sendResetPasswordSuccessEmail";
 import dbConnect from "@/lib/dbConnect";
@@ -33,11 +34,16 @@ const resetPassword = async (request: NextRequest, context: any) => {
       });
     }
 
-    if (password.length < 8) {
-      return NextResponse.json({
-        success: false,
-        message: "Password should contain at least 8 characters",
-      });
+    const isValidPassword = validatePassword(password);
+
+    if (!isValidPassword.isValid) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: isValidPassword.message,
+        },
+        { status: 400 }
+      );
     }
 
     const hashedPassword = await encrypt(password);

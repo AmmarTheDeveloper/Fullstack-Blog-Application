@@ -10,67 +10,90 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { PrivateBlogButtons } from "./privateBlogButtons";
 
 interface blogProps {
-  blogTitle: string;
-  blogContent: string;
-  BlogImage: string;
-  Time: string;
+  title: string;
+  description: string;
+  content: string;
+  time: string;
+  thumbnail: string;
+  category: string;
+  id: string;
+  isPublic: boolean;
   profileImage: string;
-  blogId: string;
+  name: string;
+  fetchBlog?: (...args: any[]) => void;
 }
 
 const Blog = ({
-  blogTitle,
-  blogContent,
-  BlogImage,
-  Time,
+  title,
+  description,
+  content,
+  time,
+  thumbnail,
+  id,
+  category,
+  isPublic,
   profileImage,
-  blogId,
+  name,
+  fetchBlog,
 }: blogProps) => {
   return (
-    <div>
-      <Card className="w-[300px]">
-        <div className="p-[15px] pb-0">
-          <Image
-            src={BlogImage}
-            width={100}
-            height={100}
-            alt={"Blog Image"}
-            className="w-full h-auto rounded"
-          />
-        </div>
-        <CardHeader className="mt-3 mb-2 py-0 text-2xl font-medium">
-          <CardTitle>{blogTitle}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p
-            dangerouslySetInnerHTML={{ __html: blogContent }}
-            style={{
-              display: "-webkit-box",
-              WebkitLineClamp: 2, // Number of lines to show
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-            className="max-h-[80px] text-sm font-[400] overflow-hidden mb-3"
-          ></p>
-          <Link href={"/blogs/" + blogId}>
-            <Button>Read More</Button>
-          </Link>
+    <>
+      <Card className="max-w-[400px] sm:max-w-full overflow-hidden w-full h-auto">
+        <CardContent className="p-0">
+          <div className="flex flex-col sm:flex-row">
+            <div className="w-full sm:w-1/2">
+              <Image
+                src={thumbnail}
+                alt={title}
+                width={200}
+                height={200}
+                className="w-full h-48 sm:h-[260px] object-cover"
+              />
+            </div>
+            <div className="w-full sm:w-2/3 p-4 flex flex-col justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">{title}</h2>
+                <p className="text-sm text-muted-foreground mb-2">{category}</p>
+                <div className="flex items-center space-x-2 mb-3">
+                  <Image
+                    src={profileImage}
+                    alt={name}
+                    width={34}
+                    height={34}
+                    className="rounded-full object-cover overflow-hidden"
+                  />
+                  <div>
+                    <p className="text-sm font-medium">{name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(time).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <p
+                    className="text-sm line-clamp-3 mb-4"
+                    // dangerouslySetInnerHTML={{ __html: content }}
+                  >
+                    {description}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 justify-between items-center">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={"/blogs/read/" + id}>Read More</Link>
+                  </Button>
+                  {!isPublic ? (
+                    <PrivateBlogButtons fetchBlog={fetchBlog!} blogId={id} />
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </div>
         </CardContent>
-        <CardFooter className="flex justify-between px-[15px]">
-          <Image
-            alt={"Profile Image"}
-            src={profileImage}
-            width={100}
-            height={100}
-            className="h-8 w-8 rounded-[50%]"
-          />
-          <p className="text-sm font-[400]">{new Date(Time).toDateString()}</p>
-        </CardFooter>
       </Card>
-    </div>
+    </>
   );
 };
 

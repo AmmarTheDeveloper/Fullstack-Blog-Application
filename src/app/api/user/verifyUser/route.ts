@@ -4,10 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     let user = await verifyUser(request);
-    return NextResponse.json(
-      { success: true, user: user._doc },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, user }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error.message },
@@ -30,11 +27,11 @@ export async function verifyUser(request: NextRequest) {
 
 export async function isLoggedIn(request: NextRequest) {
   let token = request.cookies.get("token")?.value;
-  if (!token) return false;
+  if (!token) return null;
   try {
-    await verifyToken(token);
-    return true;
+    const payload = await verifyToken(token);
+    return payload;
   } catch (error) {
-    return false;
+    return null;
   }
 }
