@@ -59,7 +59,7 @@ const formSchema = z.object({
   }),
 });
 
-export default function updateBlog() {
+export default function UpdateBlog() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;

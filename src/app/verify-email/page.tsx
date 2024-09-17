@@ -32,7 +32,7 @@ const FormSchema = z.object({
   }),
 });
 
-export default function verifyEmail() {
+export default function VerifyEmail() {
   const router = useRouter();
   const [isLoading, setLoading] = useState(false);
 
