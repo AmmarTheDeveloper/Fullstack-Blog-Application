@@ -83,7 +83,7 @@ async function updateUser(request: NextRequest, context: any) {
 
     let user = await User.findOne({ _id: context.user._id }).lean();
 
-    const { password, ...payload } = user;
+    const { password, ...payload } = user!.toObject();
     console.log(password, payload);
 
     let token = await generateToken(payload);
