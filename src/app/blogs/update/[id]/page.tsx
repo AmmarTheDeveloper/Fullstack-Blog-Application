@@ -247,12 +247,8 @@ export default function UpdateBlog() {
               <FormItem>
                 <FormLabel>Blog Category : </FormLabel>
                 <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    className="w-full"
-                  >
-                    <SelectTrigger>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
                     <SelectContent>

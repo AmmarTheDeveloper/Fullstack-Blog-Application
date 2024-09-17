@@ -32,7 +32,7 @@ const forgotPassword = async (request: NextRequest) => {
 
     await sendResetPasswordEmail({
       fullname: user.fullname,
-      resetPasswordToken: user.resetPasswordToken,
+      resetPasswordToken: user.resetPasswordToken as string,
       receiverEmail: user.email,
     });
 
