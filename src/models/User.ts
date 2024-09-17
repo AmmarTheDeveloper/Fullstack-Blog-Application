@@ -8,9 +8,9 @@ export interface UserType extends Document {
   profileImage: string;
   isVerified: boolean;
   resetPasswordToken: String | undefined;
-  resetPasswordExpiry: Date | undefined;
+  resetPasswordExpiry: number | undefined;
   verificationToken: String | undefined;
-  verificationTokenExpiry: Date | undefined;
+  verificationTokenExpiry: number | undefined;
   lastLogin: Date;
 }
 
@@ -47,9 +47,9 @@ export const userSchema: Schema<UserType> = new Schema(
       default: false,
     },
     resetPasswordToken: String,
-    resetPasswordExpiry: Date,
+    resetPasswordExpiry: Number,
     verificationToken: String,
-    verificationTokenExpiry: Date,
+    verificationTokenExpiry: Number,
   },
   { timestamps: true }
 );
