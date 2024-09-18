@@ -43,7 +43,7 @@ const FormSchema = z.object({
   cpassword: z
     .string()
     .min(1, { message: "Confirm password field is required." })
-    .refine((data) => data.password === data.cpassword, {
+    .refine((data: any) => data.password === data.cpassword, {
       message: "Passwords not matched",
       path: ["cpassword"],
     }),
