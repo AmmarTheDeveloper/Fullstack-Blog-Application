@@ -32,7 +32,7 @@ const FormSchema = z.object({
 
 export default function ForgotPassword() {
   const [isSubmitted, setSubmitted] = useState(false);
-  const [email, setEmail] = useState();
+  const [email, setEmail] = useState<string>();
   const [isLoading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -42,7 +42,7 @@ export default function ForgotPassword() {
   });
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      setEmail(data.email);
+      setEmail(data.email as string);
       setLoading(true);
       let response: AxiosResponse<ApiResponse> = await axios.post(
         "/api/user/forgot-password",
