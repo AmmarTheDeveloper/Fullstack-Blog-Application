@@ -55,7 +55,7 @@ export default function ChangePassword() {
       .min(8, {
         message: "Confirm password must be at least 8 characters long",
       })
-      .refine((data) => data.newPassword === data.confirmPassword, {
+      .refine((data: any) => data.newPassword === data.confirmPassword, {
         message: "Passwords do not match",
       }),
   });
