@@ -173,12 +173,8 @@ export default function AddBlog() {
               <FormItem>
                 <FormLabel>Blog Category : </FormLabel>
                 <FormControl>
-                  <Select
-                    style={{ width: "100%" }}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <SelectTrigger>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
                     <SelectContent>
