@@ -67,7 +67,11 @@ const Blogs = () => {
             dataLength={blogs.length}
             next={() => setPage((prev) => prev + 1)}
             hasMore={hasMore}
-            loader={<Spinner />}
+            loader={
+              <div className="flex justify-center mt-2">
+                <Spinner />
+              </div>
+            }
             scrollableTarget={"scrollableDiv"}
             style={{ overflow: "hidden", paddingBottom: "20px" }}
             endMessage={<p className="text-center">No more blogs to show.</p>}

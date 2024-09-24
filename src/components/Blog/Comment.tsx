@@ -51,7 +51,10 @@ const Comment = ({ comment }: CommentProps) => {
       <div>
         <div className="border-t-2  pt-2 flex items-start gap-4 my-2">
           <Avatar className="w-8 h-8 border">
-            <AvatarImage src={user?.profileImage} alt={user?.fullname} />
+            <AvatarImage
+              src={`${user?.profileImage}?t=${new Date().getTime()}`}
+              alt={user?.fullname}
+            />
             <AvatarFallback>{user?.fullname}</AvatarFallback>
           </Avatar>
           <div className="flex-1">

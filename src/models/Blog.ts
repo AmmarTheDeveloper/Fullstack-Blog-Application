@@ -7,6 +7,7 @@ export interface BlogType extends Document {
   content: string;
   category: string;
   thumbnail: string;
+  thumbnailPublicId: string;
   postedBy: UserType | ObjectId;
   description: string;
   date: Date;
@@ -30,6 +31,10 @@ export const blogSchema: Schema<BlogType> = new Schema(
     thumbnail: {
       type: String,
       required: [true, "Blog image is required."],
+    },
+    thumbnailPublicId: {
+      type: String,
+      required: [true, "Blog image public id is required."],
     },
     category: {
       type: String,

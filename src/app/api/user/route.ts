@@ -3,6 +3,7 @@ import User from "@/models/User";
 import { writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { loggedInUserHandler } from "../handler";
+import { cloudinary } from "@/lib/cloudinary";
 
 async function updateUser(request: NextRequest, context: any) {
   try {
@@ -40,6 +41,7 @@ async function updateUser(request: NextRequest, context: any) {
 
       try {
         const filename = userExist.profileImage;
+        const public_id = userExist.profileImagePublicId;
         const base64 = profileImage.split(",")[1];
         const buffer = Buffer.from(base64, "base64");
 
@@ -53,7 +55,12 @@ async function updateUser(request: NextRequest, context: any) {
           );
         }
 
-        await writeFile("./public" + filename, buffer);
+        // await writeFile("./public" + filename, buffer);
+        await cloudinary.uploader.upload(`data:${mimeType};base64,${base64}`, {
+          // folder: "profileImages",
+          public_id: public_id,
+          invalidate: true,
+        });
       } catch (error: any) {
         console.log(error);
         return NextResponse.json(
@@ -83,7 +90,7 @@ async function updateUser(request: NextRequest, context: any) {
 
     let user = await User.findOne({ _id: context.user._id }).lean();
 
-    const { password, ...payload } = user!.toObject();
+    const { password, ...payload } = user;
     console.log(password, payload);
 
     let token = await generateToken(payload);

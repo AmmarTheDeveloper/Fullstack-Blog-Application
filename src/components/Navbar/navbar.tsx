@@ -102,7 +102,7 @@ export default function Navbar() {
                 <div className="mx-3 hidden md:block">
                   <Link
                     className="text-[14px] md:text-[15px] font-medium text-[#666666] dark:text-white"
-                    href={"login"}
+                    href={"/login"}
                   >
                     <Button className="mx-2 text-sm" size={"sm"}>
                       Login
@@ -110,7 +110,7 @@ export default function Navbar() {
                   </Link>
                   <Link
                     className="text-[14px] md:text-[15px] font-medium text-[#666666] dark:text-white"
-                    href={"register"}
+                    href={"/register"}
                   >
                     <Button size={"sm"} className="text-sm">
                       Register

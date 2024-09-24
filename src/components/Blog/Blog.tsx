@@ -46,7 +46,7 @@ const Blog = ({
           <div className="flex flex-col sm:flex-row">
             <div className="w-full sm:w-1/2">
               <Image
-                src={thumbnail}
+                src={`${thumbnail}?t=${new Date().getTime()}`}
                 alt={title}
                 width={200}
                 height={200}
@@ -59,7 +59,7 @@ const Blog = ({
                 <p className="text-sm text-muted-foreground mb-2">{category}</p>
                 <div className="flex items-center space-x-2 mb-3">
                   <Image
-                    src={profileImage}
+                    src={`${profileImage}?t=${new Date().getTime()}`}
                     alt={name}
                     width={34}
                     height={34}

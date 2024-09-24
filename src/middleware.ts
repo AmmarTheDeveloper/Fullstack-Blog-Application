@@ -62,5 +62,7 @@ export const config = {
     "/forgot-password",
     "/reset-password/:path*",
     "/blogs/:path*",
+    "/user/settings",
+    "/user/settings/change-password",
   ],
 };

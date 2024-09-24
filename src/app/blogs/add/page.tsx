@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 import axios, { AxiosResponse } from "axios";
 import { ApiResponse } from "@/helper/types/types";
@@ -27,10 +28,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Editor from "@/components/Editor/Editor";
 import { useState } from "react";
 import { Spinner } from "@/helper/loader/spinner";
 import { Textarea } from "@/components/ui/textarea";
+// import Editor from "@/components/Editor/Editor";
+import dynamic from "next/dynamic";
+const Editor = dynamic(() => import("@/components/Editor/Editor"), {
+  ssr: false,
+});
 
 const formSchema = z.object({
   title: z.string().min(3, {

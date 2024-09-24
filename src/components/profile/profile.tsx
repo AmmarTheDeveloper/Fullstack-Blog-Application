@@ -30,7 +30,7 @@ export function Profile({ profileImage }: ProfileProp) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
-          <AvatarImage src={profileImage} />
+          <AvatarImage src={`${profileImage}?t=${new Date().getTime()}`} />
           <AvatarFallback>Profile image</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

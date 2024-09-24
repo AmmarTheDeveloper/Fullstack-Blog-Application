@@ -4,6 +4,7 @@ import CommentSection from "./CommentSection";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { UserType } from "@/models/User";
+import Image from "next/image";
 
 const ReadBlog = () => {
   const blog = useSelector((state: RootState) => state.blog.blog);
@@ -25,8 +26,8 @@ const ReadBlog = () => {
             </h1>
           </div>
           <div>
-            <img
-              src={blog?.thumbnail}
+            <Image
+              src={`${blog?.thumbnail}?t=${new Date().getTime()}`}
               alt="Blog Thumbnail"
               width={1200}
               height={600}
@@ -37,7 +38,7 @@ const ReadBlog = () => {
             <div className="py-2 flex space-x-2">
               <Avatar className="h-12 w-12">
                 <AvatarImage
-                  src={postedBy?.profileImage}
+                  src={`${postedBy?.profileImage}?t=${new Date().getTime()}`}
                   alt={`@${postedBy?.fullname}`}
                 />
                 <AvatarFallback>User</AvatarFallback>

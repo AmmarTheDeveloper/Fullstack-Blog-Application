@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { loggedInUserHandler } from "../../handler";
 import { writeFile } from "fs/promises";
 import Blog from "@/models/Blog";
+import { cloudinary } from "@/lib/cloudinary";
 
 const createBlog = async (request: NextRequest, context: any) => {
   await dbConnect();
@@ -28,7 +29,9 @@ const createBlog = async (request: NextRequest, context: any) => {
       description,
       content,
       category,
-      thumbnail: "/blogThumbnails/" + filename,
+      // thumbnail: "/blogThumbnails/" + filename,
+      thumbnail: filename.url,
+      thumbnailPublicId: filename.public_id,
       date: Date.now(),
       postedBy,
     });
@@ -78,9 +81,28 @@ const getBlog = async (request: NextRequest) => {
   }
 };
 
-async function saveThumbnail(file: File): Promise<string> {
+// async function saveThumbnail(file: File): Promise<string> {
+async function saveThumbnail(
+  file: File
+): Promise<{ url: string; public_id: string }> {
+  const validImageTypes = [
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/jfif",
+  ];
+
+  const mimeType = file.type;
+
+  if (!validImageTypes.includes(mimeType)) {
+    throw new Error("Only image files are allowed.");
+  }
+
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
+  const base64 = buffer.toString("base64");
 
   const imageSizeInBytes = buffer.byteLength;
   const imageSizeInMB = imageSizeInBytes / (1024 * 1024);
@@ -89,10 +111,20 @@ async function saveThumbnail(file: File): Promise<string> {
     throw new Error("Image should be less than 1MB");
   }
 
-  const filename = Date.now() + file.name;
+  // const filename = Date.now() + file.name;
   try {
-    await writeFile(`./public/blogThumbnails/${filename}`, buffer);
-    return filename;
+    // await writeFile(`./public/blogThumbnails/${filename}`, buffer);
+    // return filename;
+    const uploadResponse = await cloudinary.uploader.upload(
+      `data:${mimeType};base64,${base64}`,
+      {
+        folder: "blogThumbnails",
+      }
+    );
+    return {
+      url: uploadResponse.secure_url,
+      public_id: uploadResponse.public_id,
+    };
   } catch (error: any) {
     throw new Error(error);
   }

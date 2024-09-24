@@ -223,7 +223,7 @@ export default function UpdateBlog() {
             <>
               <div className="text-center">
                 <Image
-                  src={blog.thumbnail!}
+                  src={`${blog.thumbnail!}?t=${new Date().getTime()}`}
                   height={300}
                   width={300}
                   alt={"Thumbnail not found"}

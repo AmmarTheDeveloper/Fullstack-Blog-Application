@@ -107,7 +107,10 @@ export default function Profile() {
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="md:w-[250px] md:h-[250px] h-32 w-32">
                 <AvatarImage
-                  src={avatar || user?.profileImage || ""}
+                  src={`${
+                    (avatar && avatar) ||
+                    user?.profileImage + "?t=" + new Date().getTime()
+                  }`}
                   alt={user?.fullname || "User Avatar"}
                 />
                 <AvatarFallback>

@@ -29,10 +29,12 @@ const Blogs = () => {
           // <Spinner size="lg" />
           <ReadBlogSkeleton />
         ) : blog == null ? (
-          <Message
-            title="No blog found"
-            description="We couldn’t find the blog you were looking for. It might have been moved or deleted. Please check the URL for any typos, or explore other sections of the site to find related content."
-          />
+          <div>
+            <Message
+              title="No blog found"
+              description="We couldn’t find the blog you were looking for. It might have been moved or deleted. Please check the URL for any typos, or explore other sections of the site to find related content."
+            />
+          </div>
         ) : (
           <ReadBlog />
         )}

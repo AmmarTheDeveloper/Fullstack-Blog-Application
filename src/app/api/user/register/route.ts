@@ -7,6 +7,7 @@ import { writeFile } from "fs/promises";
 import { generateVerificationCode } from "@/utils/generateVerificationCode";
 import { sendVerificationToken } from "@/helper/nodemailer/sendVerificationToken";
 import { validatePassword } from "@/helper/authentication/validatePassword";
+import { cloudinary } from "@/lib/cloudinary";
 
 async function Register(request: NextRequest) {
   await dbConnect();
@@ -40,7 +41,6 @@ async function Register(request: NextRequest) {
       );
     }
 
-    // Process profile image
     const base64 = profileImage.split(",")[1];
     const buffer = Buffer.from(base64, "base64");
     const fileName = `${Date.now()}.png`;
@@ -55,23 +55,27 @@ async function Register(request: NextRequest) {
       );
     }
 
-    try {
-      await writeFile(`./public/profileImages/${fileName}`, buffer);
-    } catch (fileError) {
-      console.error("Error saving profile image:", fileError);
-      return NextResponse.json(
-        { success: false, message: "Failed to save profile image." },
-        { status: 500 }
-      );
-    }
-
-    // Check if user already exists
+    // if user already exist then sending email already exists in response
     const isUserAlreadyRegistered = await User.findOne({ email });
 
     if (isUserAlreadyRegistered) {
       return NextResponse.json(
         { success: false, message: "Email already exists." },
         { status: 400 }
+      );
+    }
+
+    let uploadResponse;
+    try {
+      // await writeFile(`./public/profileImages/${fileName}`, buffer);
+      uploadResponse = await cloudinary.uploader.upload(profileImage, {
+        folder: "profileImages",
+      });
+    } catch (fileError) {
+      console.error("Error saving profile image:", fileError);
+      return NextResponse.json(
+        { success: false, message: "Failed to save profile image." },
+        { status: 500 }
       );
     }
 
@@ -94,7 +98,9 @@ async function Register(request: NextRequest) {
       fullname,
       email,
       password: hashedPassword,
-      profileImage: "/profileImages/" + fileName,
+      // profileImage: "/profileImages/" + fileName,
+      profileImage: uploadResponse.secure_url,
+      profileImagePublicId: uploadResponse.public_id,
       verificationToken,
       verificationTokenExpiry: Date.now() + 300 * 60 * 1000,
     });

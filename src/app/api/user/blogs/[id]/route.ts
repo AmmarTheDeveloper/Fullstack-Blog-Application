@@ -1,4 +1,5 @@
 import { loggedInUserHandler } from "@/app/api/handler";
+import { cloudinary } from "@/lib/cloudinary";
 import dbConnect from "@/lib/dbConnect";
 import Blog from "@/models/Blog";
 import Comment, { CommentType } from "@/models/Comment";
@@ -117,9 +118,9 @@ const deleteBlog = async (request: NextRequest, context: any) => {
 
     const userId = context.user._id;
 
-    const deleted = await Blog.deleteOne({ _id: id, postedBy: userId });
+    const deleted = await Blog.findOneAndDelete({ _id: id, postedBy: userId });
 
-    if (deleted.deletedCount == 0) {
+    if (!deleted) {
       return NextResponse.json(
         {
           success: false,
@@ -128,6 +129,10 @@ const deleteBlog = async (request: NextRequest, context: any) => {
         { status: 401 }
       );
     }
+
+    await cloudinary.uploader.destroy(deleted?.thumbnailPublicId, {
+      invalidate: true,
+    });
 
     const comments = await Comment.find({ blogId: id });
 
@@ -181,19 +186,25 @@ async function updateBlog(request: NextRequest, context: any) {
       );
     }
 
-    let filename = isBlogAvailable.thumbnail;
+    // let filename = isBlogAvailable.thumbnail;
 
     if (thumbnail) {
-      try {
-        await unlink("./public" + isBlogAvailable.thumbnail);
-      } catch (error) {}
-      const Tempfilename = await saveThumbnail(thumbnail);
-      filename = "/blogThumbnails/" + Tempfilename;
+      // try {
+      //   await unlink("./public" + isBlogAvailable.thumbnail);
+      // } catch (error) {}
+      // const Tempfilename = await saveThumbnail(thumbnail);
+      // filename = "/blogThumbnails/" + Tempfilename;
+      await saveThumbnail(thumbnail, isBlogAvailable.thumbnailPublicId);
     }
+
+    // await Blog.updateOne(
+    //   { _id: id },
+    //   { title, description, content, category, thumbnail: filename }
+    // );
 
     await Blog.updateOne(
       { _id: id },
-      { title, description, content, category, thumbnail: filename }
+      { title, description, content, category }
     );
 
     return NextResponse.json(
@@ -211,8 +222,25 @@ async function updateBlog(request: NextRequest, context: any) {
   }
 }
 
-async function saveThumbnail(file: File): Promise<string> {
+// async function saveThumbnail(file: File): Promise<string> {
+async function saveThumbnail(file: File, public_id: string) {
+  const validImageTypes = [
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/jfif",
+  ];
+
+  const mimeType = file.type;
+
+  if (!validImageTypes.includes(mimeType)) {
+    throw new Error("Only image files are allowed.");
+  }
+
   const buffer = Buffer.from(await file.arrayBuffer());
+  const imageBase64 = buffer.toString("base64");
   const imageSizeInBytes = buffer.byteLength;
   const imageSizeInMB = imageSizeInBytes / (1024 * 1024);
 
@@ -220,10 +248,15 @@ async function saveThumbnail(file: File): Promise<string> {
     throw new Error("Image size should be less than 1MB");
   }
 
-  const filename = Date.now() + file.name;
+  // const filename = Date.now() + file.name;
   try {
-    await writeFile(`./public/blogThumbnails/${filename}`, buffer);
-    return filename;
+    // await writeFile(`./public/blogThumbnails/${filename}`, buffer);
+    // return filename;
+    console.log(public_id);
+    await cloudinary.uploader.upload(`data:${mimeType};base64,${imageBase64}`, {
+      public_id: public_id,
+      invalidate: true,
+    });
   } catch (error: any) {
     throw new Error(error);
   }
