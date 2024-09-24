@@ -21,6 +21,8 @@ const MemoizedAvatar = memo(({ user }: { user: UserType }) => (
   </Avatar>
 ));
 
+MemoizedAvatar.displayName = "MemoizedAvatar";
+
 const CommentSection = () => {
   const blog = useSelector((state: RootState) => state.blog.blog);
   const user = useSelector((state: RootState) => state.auth.user);

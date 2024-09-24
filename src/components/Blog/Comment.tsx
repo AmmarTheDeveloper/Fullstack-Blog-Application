@@ -198,4 +198,6 @@ const Comment = memo(({ comment }: CommentProps) => {
   );
 });
 
+Comment.displayName = "Comment";
+
 export default Comment;
