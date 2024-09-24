@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Textarea } from "../ui/textarea";
@@ -11,6 +11,16 @@ import { RootState } from "@/lib/store";
 import { fetchBlog } from "@/helper/blogs/blogs";
 import { UserType } from "@/models/User";
 
+const MemoizedAvatar = memo(({ user }: { user: UserType }) => (
+  <Avatar className="w-10 h-10 border">
+    <AvatarImage
+      src={`${user?.profileImage}?t=${new Date().getTime()}`}
+      alt={`@${user?.fullname}`}
+    />
+    <AvatarFallback>{user?.fullname[0]}</AvatarFallback>
+  </Avatar>
+));
+
 const CommentSection = () => {
   const blog = useSelector((state: RootState) => state.blog.blog);
   const user = useSelector((state: RootState) => state.auth.user);
@@ -20,34 +30,37 @@ const CommentSection = () => {
 
   const postedBy = blog?.postedBy as UserType;
 
-  async function handlePostComment(e: any) {
-    try {
-      setLoading(true);
-      if (!content || content.trim() == "") {
-        toast.error("Comment is required");
-        return;
-      }
-      const response = await axios.post("/api/user/blogs/comment", {
-        blogId: blog?._id,
-        comment: content,
-      });
+  const handlePostComment = useCallback(
+    async (e: any) => {
+      try {
+        setLoading(true);
+        if (!content || content.trim() == "") {
+          toast.error("Comment is required");
+          return;
+        }
+        const response = await axios.post("/api/user/blogs/comment", {
+          blogId: blog?._id,
+          comment: content,
+        });
 
-      setContent("");
-      if (response.data.success) {
-        toast.success("Comment added successfully");
-        fetchBlog(dispatch, String(blog?._id || ""));
-        return;
+        setContent("");
+        if (response.data.success) {
+          toast.success("Comment added successfully");
+          fetchBlog(dispatch, String(blog?._id || ""));
+          return;
+        }
+        toast.error(response.data.message);
+      } catch (error: any) {
+        setLoading(false);
+        toast.error(
+          error.response.data.message || error.message || "Something went wrong"
+        );
+      } finally {
+        setLoading(false);
       }
-      toast.error(response.data.message);
-    } catch (error: any) {
-      setLoading(false);
-      toast.error(
-        error.response.data.message || error.message || "Something went wrong"
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+    },
+    [content, blog?._id, dispatch]
+  );
 
   return (
     <div className="border-t pt-2">
@@ -55,13 +68,14 @@ const CommentSection = () => {
         Comments ({blog?.comments?.length || 0})
       </h1>
       <div className="flex items-start gap-4">
-        <Avatar className="w-10 h-10 border">
+        {/* <Avatar className="w-10 h-10 border">
           <AvatarImage
             src={`${user?.profileImage}?t=${new Date().getTime()}`}
             alt={`@${user?.fullname}`}
           />
           <AvatarFallback>{user?.fullname[0]}</AvatarFallback>
-        </Avatar>
+        </Avatar> */}
+        <MemoizedAvatar user={user!} />
         <div className="flex-1 grid gap-2">
           <div className="flex items-center justify-between">
             <div className="font-medium">{user?.fullname}</div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Button } from "../ui/button";
 import {
   HeartIcon,
@@ -16,7 +16,7 @@ import { formatDistanceToNow } from "date-fns";
 import { CommentType } from "@/models/Comment";
 import { Popup } from "../popup/popup";
 
-const Comment = ({ comment }: CommentProps) => {
+const Comment = memo(({ comment }: CommentProps) => {
   const { theme } = useTheme();
   const {
     toggleExpand,
@@ -196,6 +196,6 @@ const Comment = ({ comment }: CommentProps) => {
       </div>
     </>
   );
-};
+});
 
 export default Comment;
