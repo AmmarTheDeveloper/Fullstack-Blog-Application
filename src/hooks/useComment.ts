@@ -28,7 +28,7 @@ export function useComment({ comment }: CommentProps) {
 
   const handleEditButtonClick = useCallback(() => {
     setEdit(!isEdit);
-  }, []);
+  }, [isEdit]);
 
   const handleEditSave = useCallback(async () => {
     setEditLoading(true);
