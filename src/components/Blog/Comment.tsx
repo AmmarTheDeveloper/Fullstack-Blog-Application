@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import { Button } from "../ui/button";
 import {
   HeartIcon,
@@ -15,18 +15,28 @@ import { useTheme } from "next-themes";
 import { formatDistanceToNow } from "date-fns";
 import { CommentType } from "@/models/Comment";
 import { Popup } from "../popup/popup";
+import { ReplyTextarea } from "./ReplyCommentTextarea";
+import { useReply } from "@/hooks/useReply";
+import { useLike } from "@/hooks/useLike";
+
+const UserAvatar = memo(({ user }: { user: UserType }) => {
+  return (
+    <Avatar className="w-8 h-8 border">
+      <AvatarImage
+        src={`${user?.profileImage}?t=${new Date().getTime()}`}
+        alt={user?.fullname}
+      />
+      <AvatarFallback>{user?.fullname}</AvatarFallback>
+    </Avatar>
+  );
+});
 
 const Comment = memo(({ comment }: CommentProps) => {
+  console.log(comment);
   const { theme } = useTheme();
+  const { toggleExpand, handleReply, reply, expanded, replyLoading, addReply } =
+    useReply({ comment });
   const {
-    toggleExpand,
-    handleReply,
-    reply,
-    handleLike,
-    isLiked,
-    expanded,
-    replyLoading,
-    addReply,
     isOwner,
     handleEditButtonClick,
     isEdit,
@@ -40,23 +50,19 @@ const Comment = memo(({ comment }: CommentProps) => {
     comment,
   });
 
+  const { isLiked, handleLike } = useLike({ comment });
+
   const formatDate = (date: Date) => {
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
-  const user = comment?.userId as UserType;
+  const user = useMemo(() => comment?.userId as UserType, [comment._id]);
 
   return (
     <>
       <div>
         <div className="border-t-2  pt-2 flex items-start gap-4 my-2">
-          <Avatar className="w-8 h-8 border">
-            <AvatarImage
-              src={`${user?.profileImage}?t=${new Date().getTime()}`}
-              alt={user?.fullname}
-            />
-            <AvatarFallback>{user?.fullname}</AvatarFallback>
-          </Avatar>
+          <UserAvatar user={user} />
           <div className="flex-1">
             <div className="flex-1 grid gap-2">
               <div className="flex items-center justify-between">
@@ -160,27 +166,13 @@ const Comment = memo(({ comment }: CommentProps) => {
 
             <div>
               {expanded && (
-                <div className="my-2 flex gap-[10px] flex-wrap justify-end">
-                  <Textarea
-                    placeholder="Enter reply..."
-                    value={reply}
-                    onChange={handleReply}
-                  ></Textarea>
-                  {!replyLoading ? (
-                    <>
-                      <Button type="button" onClick={addReply}>
-                        Reply
-                      </Button>
-                      <Button variant="ghost" onClick={toggleExpand}>
-                        Cancel
-                      </Button>
-                    </>
-                  ) : (
-                    <Button type="button">
-                      <Spinner />
-                    </Button>
-                  )}
-                </div>
+                <ReplyTextarea
+                  reply={reply}
+                  handleReply={handleReply}
+                  replyLoading={replyLoading}
+                  addReply={addReply}
+                  toggleExpand={toggleExpand}
+                />
               )}
             </div>
           </div>

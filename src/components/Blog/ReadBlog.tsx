@@ -26,7 +26,7 @@ const ReadBlog = () => {
             </h1>
           </div>
           <div>
-            <img
+            <Image
               src={`${blog?.thumbnail}?t=${new Date().getTime()}`}
               alt="Blog Thumbnail"
               width={1200}
