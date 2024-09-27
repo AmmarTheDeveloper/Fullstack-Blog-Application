@@ -31,6 +31,8 @@ const UserAvatar = memo(({ user }: { user: UserType }) => {
   );
 });
 
+UserAvatar.displayName = "UserAvatar";
+
 const Comment = memo(({ comment }: CommentProps) => {
   console.log(comment);
   const { theme } = useTheme();
