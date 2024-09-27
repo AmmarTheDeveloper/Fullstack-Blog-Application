@@ -5,7 +5,7 @@ const nextConfig = {
     },
 
     images: {
-        unoptimized: false,
+        unoptimized: true,
         domains: [ 'cdn-icons-png.flaticon.com', 'i.ytimg.com', "res.cloudinary.com" ],
         remotePatterns: [
             {
