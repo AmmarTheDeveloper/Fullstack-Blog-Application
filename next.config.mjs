@@ -5,7 +5,7 @@ const nextConfig = {
     },
 
     images: {
-        domains: [ 'cdn-icons-png.flaticon.com', 'i.ytimg.com', "res.cloudinary.com" ],
+        domains: [ 'cdn-icons-png.flaticon.com', 'i.ytimg.com' ],
         remotePatterns: [
             {
                 protocol: "https",
